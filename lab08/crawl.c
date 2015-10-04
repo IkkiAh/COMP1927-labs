@@ -65,9 +65,21 @@ int main(int argc, char **argv)
         //    grab Next URL from ToDo list
         char * nxturl = leaveQueue(ToDo);
         
+        char urlBarrier[100] = {0};
+        int n = 0;
+        int n2 = 0;
+        while (n < 3) {
+            int c = nxturl[n2];
+            urlBarrier[n2] = c;
+            if (c == 47) {
+                n++;
+            }
+            n2++;
+        }
+        
         //printf("**** %s\n", nxturl);
         //    if (not allowed) continue
-        while (strncmp(nxturl, "http://www.cse.unsw.edu.au", 26) != 0) {
+        while (strncmp(nxturl, urlBarrier, n2) != 0) {
             if (!emptyQueue(ToDo)) {
                 nxturl = leaveQueue(ToDo);
             } else {
@@ -114,9 +126,9 @@ int main(int argc, char **argv)
                     //printf("+");
                     //showGraph(storedURL, 1);
                     //showQueue(ToDo);
-                    if(strstr(full_link, "answers") != NULL) {
+                    //if(strstr(full_link, "answers") != NULL) {
                         printf("%s\n", full_link);
-                    }
+                    //}
                 }
                 
                 //printf("Found %s\n",full_link);

@@ -1,6 +1,6 @@
 #!/usr/bin/sh
 
-for x in `seq 1 62`
+for x in `seq 1 61`
 do
     read line
     open $line
