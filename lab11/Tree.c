@@ -414,6 +414,7 @@ Link rotateR(Link n1)
 	if (n2 == NULL) return n1;
 	n1->left = n2->right;
 	n2->right = n1;
+    TreeRep->nrotates++;
 	return n2;
 }
 
@@ -425,6 +426,7 @@ Link rotateL(Link n2)
 	if (n1 == NULL) return n2;
 	n2->right = n1->left;
 	n1->left = n2;
+    TreeRep->nrotates++;
 	return n1;
 }
 
