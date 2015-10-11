@@ -60,24 +60,27 @@ int main(int argc, char **argv)
     // while (ToDo list not empty and Graph not filled) {
     int counter = 0;
     
+    // Set up the URL Barrier
+    char * nxturl = leaveQueue(ToDo);
+    char urlBarrier[100] = {0};
+    int n = 0;
+    int n2 = 0;
+    while (n < 3) {
+        int c = nxturl[n2];
+        urlBarrier[n2] = c;
+        if (c == 47) {
+            n++;
+        }
+        n2++;
+    }
+    enterQueue(ToDo, nxturl);
+    
     while (!(emptyQueue(ToDo)) && (nVertices(storedURL) < maxURLs)) {
         
         //    grab Next URL from ToDo list
         char * nxturl = leaveQueue(ToDo);
         
-        char urlBarrier[100] = {0};
-        int n = 0;
-        int n2 = 0;
-        while (n < 3) {
-            int c = nxturl[n2];
-            urlBarrier[n2] = c;
-            if (c == 47) {
-                n++;
-            }
-            n2++;
-        }
-        
-        //printf("**** %s\n", nxturl);
+        //printf("**** %s\n", urlBarrier);
         //    if (not allowed) continue
         while (strncmp(nxturl, urlBarrier, n2) != 0) {
             if (!emptyQueue(ToDo)) {
@@ -126,9 +129,9 @@ int main(int argc, char **argv)
                     //printf("+");
                     //showGraph(storedURL, 1);
                     //showQueue(ToDo);
-                    //if(strstr(full_link, "answers") != NULL) {
+                    if(strstr(full_link, "answers") != NULL) {
                         printf("%s\n", full_link);
-                    //}
+                    }
                 }
                 
                 //printf("Found %s\n",full_link);
