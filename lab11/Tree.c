@@ -148,7 +148,6 @@ void TreeInsert(Tree t, Item it)
 	case InsertAVL:
 		t->root = insertAVL(t->root, it); break;
 	}
-    //t->ncompares++;
 	//printf("After inserting %d, tree is:\n",key(it));
 	//showTree(t);
 }
@@ -158,13 +157,13 @@ Link insert(Link t, Item it)
 {
 	if (t == NULL) return newNode(it);
 	int diff = cmp(key(it),key(t->value));
+    t->within->ncompares++;
 	if (diff == 0)
 		t->value = it;
 	else if (diff < 0)
 		t->left = insert(t->left, it);
 	else if (diff > 0)
 		t->right = insert(t->right, it);
-    t->within->ncompares++;
 	return t;
 }
 
@@ -172,6 +171,7 @@ Link insertAtRoot(Link t, Item it)
 { 
 	if (t == NULL) return newNode(it);
 	int diff = cmp(key(it), key(t->value));
+    t->within->ncompares++;
 	if (diff == 0)
 		t->value = it;
 	else if (diff < 0) {
@@ -182,7 +182,6 @@ Link insertAtRoot(Link t, Item it)
 		t->right = insertAtRoot(t->right, it);
 		t = rotateL(t);
 	}
-    //t->within->ncompares++;
 	return t;
 }
 
@@ -194,7 +193,6 @@ Link insertRandom(Link t, Item it)
 		t = insertAtRoot(t, it);
 	else
 		t = insert(t, it);
-    //t->within->ncompares++;
 	return t;
 }
 
@@ -205,7 +203,6 @@ Link insertRebalance(Link t, Item it)
 	float ratio = lsize/rsize;
 	if (ratio < 1.0) ratio = rsize/lsize;
 	if (ratio > 1.1) t = rebalance(t);
-    //t->within->ncompares++;
 	return t;
 }
 
@@ -214,6 +211,7 @@ Link insertSplay(Link t, Item it)
 	Key v = key(it);
 	if (t == NULL) return newNode(it);
 	int diff = cmp(v,key(t->value));
+    t->within->ncompares++;
 	if (diff == 0)
 		t->value = it;
 	else if (diff < 0) { 
@@ -228,6 +226,7 @@ Link insertSplay(Link t, Item it)
 			t->left->right = insertSplay(t->left->right, it);
 			t->left = rotateL(t->left);
 		}
+        t->within->ncompares++;
 		t = rotateR(t);
 	}
 	else if (diff > 0) {
@@ -242,9 +241,9 @@ Link insertSplay(Link t, Item it)
 			t->right->left = insertSplay(t->right->left, it);
 			t->right = rotateR(t->right);
 		}
+        t->within->ncompares++;
 		t = rotateL(t);
 	}
-    //t->within->ncompares++;
 	return t;
 }
 
@@ -252,6 +251,7 @@ static Link insertAVL(Link t, Item it)
 {
 	if (t == NULL) return newNode(it);
 	int diff = cmp(key(it), key(t->value));
+    t->within->ncompares++;
 	if (diff == 0)
 		t->value = it;
 	else if (diff < 0)
@@ -262,7 +262,6 @@ static Link insertAVL(Link t, Item it)
 	int dR = depth(t->right);
 	if ((dL - dR) > 1) t = rotateR(t);
 	else if ((dR - dL) > 1) t = rotateL(t);
-    //t->within->ncompares++;
 	return t;
 }
 
@@ -285,13 +284,13 @@ static Link search(Link t, Key k)
 	if (t == NULL) return NULL;
 	Link res = NULL;
 	int diff = cmp(k,t->value);
+    t->within->ncompares++;
 	if (diff == 0)
 		res = t;
 	else if (diff < 0)
 		res = search(t->left, k);
 	else if (diff > 0)
 		res = search(t->right, k);
-    t->within->ncompares++;
 	return res;
 }
 
@@ -304,21 +303,25 @@ static Link searchSplay(Link t, Key k, int *found)
 		res = NULL;  
 	}
 	else if (eq(key(t->value),k)) {
+        t->within->ncompares++;
 		*found = 1; // item found, store true  
 		res =  t;  
 	}
 	else if (less(k,key(t->value))) {
+        t->within->ncompares+=2;
 		if (t->left == NULL){
 			*found = 0;// item not found
 			//res = rotateRight(t); 
 			res = t;
 		}
 		else if (eq(key(t->left->value),k)) {
+            t->within->ncompares++;
 			*found = 1;
 			res = rotateR(t);
 		}
 		else {
 			if (less(k,key(t->left->value))) {
+                t->within->ncompares+=2;
 				// left-left
 				t->left->left = searchSplay(t->left->left, k, found);
 				t = rotateR(t);
@@ -332,22 +335,26 @@ static Link searchSplay(Link t, Key k, int *found)
 		}
 	}
 	else { // k > key(t->value)
+        t->within->ncompares+=2;
 		if (t->right == NULL) {
 			*found = 0;// item not found
 			//res = rotateLeft(t);
 			res = t;
 		}
 		else if (eq(key(t->right->value),k)) {
+            t->within->ncompares++;
 			*found = 1;
 			res = rotateL(t);
 		}
 		else{
 			if (less(key(t->right->value),k)) {
+                t->within->ncompares+=2;
 				/* right-right */
 				t->right->right = searchSplay(t->right->right, k, found);
 				t = rotateL(t);   
 			}
 			else {
+                t->within->ncompares+=3;
 				/* right-left */
 				t->right->left = searchSplay(t->right->left, k, found);
 				t->right = rotateR(t->right);
@@ -369,6 +376,7 @@ static Link delete(Link t, Key k)
 {
 	if (t == NULL) return NULL;
 	int diff = cmp(k,t->value);
+    t->within->ncompares++;
 	if (diff == 0)
 		t = deleteRoot(t);
 	else if (diff < 0)
