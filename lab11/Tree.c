@@ -148,6 +148,7 @@ void TreeInsert(Tree t, Item it)
 	case InsertAVL:
 		t->root = insertAVL(t->root, it); break;
 	}
+    //t->ncompares++;
 	//printf("After inserting %d, tree is:\n",key(it));
 	//showTree(t);
 }
@@ -163,6 +164,7 @@ Link insert(Link t, Item it)
 		t->left = insert(t->left, it);
 	else if (diff > 0)
 		t->right = insert(t->right, it);
+    t->within->ncompares++;
 	return t;
 }
 
@@ -180,6 +182,7 @@ Link insertAtRoot(Link t, Item it)
 		t->right = insertAtRoot(t->right, it);
 		t = rotateL(t);
 	}
+    //t->within->ncompares++;
 	return t;
 }
 
@@ -191,6 +194,7 @@ Link insertRandom(Link t, Item it)
 		t = insertAtRoot(t, it);
 	else
 		t = insert(t, it);
+    //t->within->ncompares++;
 	return t;
 }
 
@@ -201,6 +205,7 @@ Link insertRebalance(Link t, Item it)
 	float ratio = lsize/rsize;
 	if (ratio < 1.0) ratio = rsize/lsize;
 	if (ratio > 1.1) t = rebalance(t);
+    //t->within->ncompares++;
 	return t;
 }
 
@@ -239,6 +244,7 @@ Link insertSplay(Link t, Item it)
 		}
 		t = rotateL(t);
 	}
+    //t->within->ncompares++;
 	return t;
 }
 
@@ -256,6 +262,7 @@ static Link insertAVL(Link t, Item it)
 	int dR = depth(t->right);
 	if ((dL - dR) > 1) t = rotateR(t);
 	else if ((dR - dL) > 1) t = rotateL(t);
+    //t->within->ncompares++;
 	return t;
 }
 
@@ -284,6 +291,7 @@ static Link search(Link t, Key k)
 		res = search(t->left, k);
 	else if (diff > 0)
 		res = search(t->right, k);
+    t->within->ncompares++;
 	return res;
 }
 
@@ -414,7 +422,7 @@ Link rotateR(Link n1)
 	if (n2 == NULL) return n1;
 	n1->left = n2->right;
 	n2->right = n1;
-    TreeRep->nrotates++;
+    n1->within->nrotates++;
 	return n2;
 }
 
@@ -426,7 +434,7 @@ Link rotateL(Link n2)
 	if (n1 == NULL) return n2;
 	n2->right = n1->left;
 	n1->left = n2;
-    TreeRep->nrotates++;
+    n1->within->nrotates++;
 	return n1;
 }
 
